@@ -16,52 +16,85 @@ namespace _1_Laba_3sem
 
         public Income(string input)
         {
-            var parts = Regex.Matches(input, @"[\""].+?[\""]|[^ ]+").Cast<Match>().Select(m => m.Value).ToList();
-            Date = DateTime.ParseExact(parts[0], "yyyy.MM.dd", null);
-            Source = parts[1].Trim('"');
-            Amount = Convert.ToInt32(parts[2]);
+            var parts = MainString.ParseString(input);
+            Type = parts[0].Trim('"');
+            Date = DateTime.ParseExact(parts[1], "yyyy.MM.dd", null);
+            Source = parts[2].Trim('"');
+            Amount = Convert.ToInt32(parts[3]);
         }
 
-        public override string ToString()
+        public virtual string LineOutput()
         {
-
-            return $"Доходы\nДата: {Date.ToString("yyyy.MM.dd")}";
+            return $"{Type}: Дата: {Date.ToString("yyyy.MM.dd")}, Источник: {Source}, Сумма: {Amount}";
         }
     }
-
     class Operation : Income
     {
         public string TypeOfOperation { get; set; }
 
         public Operation(string input) : base(input)
         {
-            var parts = Regex.Matches(input, @"[\""].+?[\""]|[^ ]+").Cast<Match>().Select(m => m.Value).ToList();
-            TypeOfOperation = parts[3].Trim('"');
+            var parts = MainString.ParseString(input);
+            TypeOfOperation = parts[4].Trim('"');
         }
 
-        public override string ToString()
+        public override string LineOutput()
         {
-            return $"Доходы компании\nДата: {Date}";
+            return $"{Type}: Дата: {Date.ToString("yyyy.MM.dd")}, Источник: {Source}, Сумма: {Amount}, Тип операции: {TypeOfOperation}";
+        }
+    }
+    class IncomeFromAnIndividual : Income
+    {
+        public string SenderName { get; set; }
+
+        public IncomeFromAnIndividual(string input) : base(input)
+        {
+            var parts = MainString.ParseString(input);
+            SenderName = parts[4].Trim('"');
+        }
+        public override string LineOutput()
+        {
+            return $"{Type}: Дата:  {Date.ToString("yyyy.MM.dd")} , Источник:  {Source} , Сумма:  {Amount}, Имя отправителя: {SenderName}";
         }
     }
 
     class MainString
     {
-        public void ObjectOutput(string stroka)
+        public string[] StrFromFiles(string filePath)
         {
-            var parts = Regex.Matches(stroka, @"[\""].+?[\""]|[^ ]+").Cast<Match>().Select(m => m.Value).ToList();
-            if (parts.Count == 3)
+            string fileContent = File.ReadAllText(filePath);
+            return fileContent.Split(new[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
+        }
+
+        public static List<string> ParseString(string input)
+        {
+            return Regex.Matches(input, @"[\""].+?[\""]|[^ ]+")
+                         .Cast<Match>()
+                         .Select(m => m.Value)
+                         .ToList();
+        }
+
+        public string ObjectOutput(string stroka)
+        {
+            var parts = ParseString(stroka);
+
+            if (parts[0].Trim('"') == "Доходы")
             {
                 Income type1 = new Income(stroka);
-                Console.WriteLine($"{type1.Source}");
+                 return type1.LineOutput();
             }
-            else if (parts.Count == 4)
+            else if (parts[0].Trim('"') == "Доходы компании")
             {
                 Operation type2 = new Operation(stroka);
-                Console.WriteLine($"{type2.TypeOfOperation}, {type2.Source}");
+                return type2.LineOutput();
+            }
+            else if (parts[0].Trim('"') == "Доходы физ.лица")
+            {
+                IncomeFromAnIndividual type3 = new IncomeFromAnIndividual(stroka);
+                return type3.LineOutput();
             }
             else
-                Console.WriteLine("Возникла ошибка");
+                return "Возникла ошибка";
         }
     }
 }
