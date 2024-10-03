@@ -8,10 +8,10 @@ namespace _1_Laba_3sem
 {
     class MainString
     {
-        public string[] StrFromFiles(string filePath)
+        public static string[] StrFromFiles(string filePath)
         {
             string fileContent = File.ReadAllText(filePath);
-            return fileContent.Split(new[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
+            return fileContent.Split(new[] { "\n" }, StringSplitOptions.RemoveEmptyEntries);
         }
 
         public static List<string> ParseString(string input)
@@ -22,22 +22,33 @@ namespace _1_Laba_3sem
                          .ToList();
         }
 
-        public BaseStr ObjectOutput(string stroka)
+        public static List<BasicIncomeType> ObjectOutput(string[] lists)
         {
-            var parts = ParseString(stroka);
-
-            if (parts[0].Trim('"') == "Доходы")
+            List<BasicIncomeType> ObjectsList = new List<BasicIncomeType>();
+            foreach (string stroka in lists)
             {
-                return new Income(parts[0].Trim('"'), DateTime.ParseExact(parts[1], "yyyy.MM.dd", null), parts[2].Trim('"'), Convert.ToInt32(parts[3]));
+                var parts = ParseString(stroka);
+                
+                if (parts[0].Trim('"') == "Доходы")
+                {
+                    Income obj = new Income();
+                    obj.ReadFromString(parts);
+                    ObjectsList.Add(obj);
+                }
+                else if (parts[0].Trim('"') == "Доходы компании")
+                {
+                    Operation obj = new Operation();
+                    obj.ReadFromString(parts);
+                    ObjectsList.Add(obj);
+                }
+                else
+                {
+                    IncomeFromAnIndividual obj = new IncomeFromAnIndividual();
+                    obj.ReadFromString(parts);
+                    ObjectsList.Add(obj);
+                }     
             }
-            else if (parts[0].Trim('"') == "Доходы компании")
-            {
-                return new Operation(parts[0].Trim('"'), DateTime.ParseExact(parts[1], "yyyy.MM.dd", null), parts[2].Trim('"'), Convert.ToInt32(parts[3]), parts[4].Trim('"'));
-            }
-            else
-            {
-                return new IncomeFromAnIndividual(parts[0].Trim('"'), DateTime.ParseExact(parts[1], "yyyy.MM.dd", null), parts[2].Trim('"'), Convert.ToInt32(parts[3]), parts[4].Trim('"'));
-            }
+            return ObjectsList;
         }
     }
 }

@@ -1,34 +1,34 @@
 ﻿using System;
 using System.Globalization;
+using System.Text.RegularExpressions;
+using System.Linq;
+using System.Collections.Generic;
+using System.IO;
 
 namespace _1_Laba_3sem
 {
-
-    abstract class BaseStr
+    abstract class BasicIncomeType
     {
+        public virtual void ReadFromString(List<string> parts)
+        { }
         public virtual string LineOutput()
         {
-            return "";
+            return "Тип: его элементы";
         }
     }
-    class Income : BaseStr
+    class Income : BasicIncomeType
     {
         public string Type { get; set; }
         public DateTime Date { get; set; }
         public string Source { get; set; }
         public int Amount { get; set; }
 
-        public Income(string type, DateTime date, string source, int amount)
+        public override void ReadFromString(List<string> parts)
         {
-            //var parts = MainString.ParseString(input);
-            Type = type;
-            Date = date;
-            Source = source;
-            Amount = amount;
-            //Type = parts[0].Trim('"');
-            //Date = DateTime.ParseExact(parts[1], "yyyy.MM.dd", null);
-            //Source = parts[2].Trim('"');
-            //Amount = Convert.ToInt32(parts[3]);
+            Type = parts[0].Trim('"');
+            Date = DateTime.ParseExact(parts[1], "yyyy.MM.dd", null);
+            Source = parts[2].Trim('"');
+            Amount = Convert.ToInt32(parts[3]);
         }
 
         public override string LineOutput()
@@ -36,7 +36,7 @@ namespace _1_Laba_3sem
             return $"{Type}:\n Дата: {Date.ToString("yyyy.MM.dd")}\n Источник: {Source}\n Сумма: {Amount} р\n";
         }
     }
-    class Operation : BaseStr
+    class Operation : BasicIncomeType
     {
         public string Type { get; set; }
         public DateTime Date { get; set; }
@@ -44,14 +44,13 @@ namespace _1_Laba_3sem
         public int Amount { get; set; }
         public string TypeOfOperation { get; set; }
 
-        public Operation(string type, DateTime date, string source, int amount, string operation)
+        public override void ReadFromString(List<string> parts)
         {
-            //var parts = MainString.ParseString(input);
-            Type = type;
-            Date = date;
-            Source = source;
-            Amount = amount;
-            TypeOfOperation = operation;
+            Type = parts[0].Trim('"');
+            Date = DateTime.ParseExact(parts[1], "yyyy.MM.dd", null);
+            Source = parts[2].Trim('"');
+            Amount = Convert.ToInt32(parts[3]);
+            TypeOfOperation = parts[4].Trim('"');
         }
 
         public override string LineOutput()
@@ -59,7 +58,7 @@ namespace _1_Laba_3sem
             return $"{Type}:\n Дата: {Date.ToString("yyyy.MM.dd")}\n Источник: {Source}\n Сумма: {Amount} р\n Тип операции: {TypeOfOperation}\n";
         }
     }
-    class IncomeFromAnIndividual : BaseStr
+    class IncomeFromAnIndividual : BasicIncomeType
     {
         public string Type { get; set; }
         public DateTime Date { get; set; }
@@ -67,14 +66,13 @@ namespace _1_Laba_3sem
         public int Amount { get; set; }
         public string SenderName { get; set; }
 
-        public IncomeFromAnIndividual(string type, DateTime date, string source, int amount, string name)
+        public override void ReadFromString(List<string> parts)
         {
-            //var parts = MainString.ParseString(input);
-            Type = type;
-            Date = date;
-            Source = source;
-            Amount = amount;
-            SenderName = name;
+            Type = parts[0].Trim('"');
+            Date = DateTime.ParseExact(parts[1], "yyyy.MM.dd", null);
+            Source = parts[2].Trim('"');
+            Amount = Convert.ToInt32(parts[3]);
+            SenderName = parts[4].Trim('"');
         }
         public override string LineOutput()
         {
