@@ -4,6 +4,7 @@ using System.Linq;
 using System.Collections.Generic;
 using System.IO;
 
+
 namespace _1_Laba_3sem
 {
     class MainString
@@ -25,28 +26,23 @@ namespace _1_Laba_3sem
         public static List<BasicIncomeType> ObjectOutput(string[] lists)
         {
             List<BasicIncomeType> ObjectsList = new List<BasicIncomeType>();
+
+            Dictionary<string, BasicIncomeType> strToIncome = new Dictionary<string, BasicIncomeType> { 
+                {"Доходы", new Income() },
+                {"Доходы компании", new Operation()},
+                {"Доходы физ.лица", new IncomeFromAnIndividual()} 
+            };
+
             foreach (string stroka in lists)
             {
                 var parts = ParseString(stroka);
-                
-                if (parts[0].Trim('"') == "Доходы")
-                {
-                    Income obj = new Income();
-                    obj.ReadFromString(parts);
-                    ObjectsList.Add(obj);
-                }
-                else if (parts[0].Trim('"') == "Доходы компании")
-                {
-                    Operation obj = new Operation();
-                    obj.ReadFromString(parts);
-                    ObjectsList.Add(obj);
-                }
-                else
-                {
-                    IncomeFromAnIndividual obj = new IncomeFromAnIndividual();
-                    obj.ReadFromString(parts);
-                    ObjectsList.Add(obj);
-                }     
+
+                string firstWord = parts[0].Trim('"');
+                strToIncome[firstWord].ReadFromString(parts);
+
+                // exception
+
+                ObjectsList.Add((BasicIncomeType)strToIncome[firstWord].Clone());
             }
             return ObjectsList;
         }

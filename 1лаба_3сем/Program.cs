@@ -28,6 +28,8 @@ namespace _1_Laba_3sem
             {
                 Console.WriteLine(linefile.LineOutput());
             }
+
+            Console.ReadKey();
         }
     }
 

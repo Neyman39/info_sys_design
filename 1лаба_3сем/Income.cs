@@ -5,10 +5,22 @@ using System.Linq;
 using System.Collections.Generic;
 using System.IO;
 
+
+
+
 namespace _1_Laba_3sem
 {
-    abstract class BasicIncomeType
+    abstract class BasicIncomeType : ICloneable
     {
+        //object ICloneable.Clone()
+        //{
+        //    return Clone();
+        //}
+        //public virtual Clone();
+        public object Clone()
+        {
+            return this.MemberwiseClone();
+        }
         public virtual void ReadFromString(List<string> parts)
         { }
         public virtual string LineOutput()
@@ -16,8 +28,8 @@ namespace _1_Laba_3sem
             return "Тип: его элементы";
         }
     }
-    class Income : BasicIncomeType
-    {
+    class Income : BasicIncomeType 
+    { 
         public string Type { get; set; }
         public DateTime Date { get; set; }
         public string Source { get; set; }
@@ -30,7 +42,6 @@ namespace _1_Laba_3sem
             Source = parts[2].Trim('"');
             Amount = Convert.ToInt32(parts[3]);
         }
-
         public override string LineOutput()
         {
             return $"{Type}:\n Дата: {Date.ToString("yyyy.MM.dd")}\n Источник: {Source}\n Сумма: {Amount} р\n";
@@ -52,7 +63,6 @@ namespace _1_Laba_3sem
             Amount = Convert.ToInt32(parts[3]);
             TypeOfOperation = parts[4].Trim('"');
         }
-
         public override string LineOutput()
         {
             return $"{Type}:\n Дата: {Date.ToString("yyyy.MM.dd")}\n Источник: {Source}\n Сумма: {Amount} р\n Тип операции: {TypeOfOperation}\n";
