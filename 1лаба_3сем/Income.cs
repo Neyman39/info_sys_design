@@ -12,21 +12,12 @@ namespace _1_Laba_3sem
 {
     abstract class BasicIncomeType : ICloneable
     {
-        //object ICloneable.Clone()
-        //{
-        //    return Clone();
-        //}
-        //public virtual Clone();
         public object Clone()
         {
             return this.MemberwiseClone();
         }
-        public virtual void ReadFromString(List<string> parts)
-        { }
-        public virtual string LineOutput()
-        {
-            return "Тип: его элементы";
-        }
+        public abstract void ReadFromString(List<string> parts);
+        public abstract string LineOutput();
     }
     class Income : BasicIncomeType 
     { 

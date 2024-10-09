@@ -23,14 +23,14 @@ namespace _1_Laba_3sem
                          .ToList();
         }
 
-        public static List<BasicIncomeType> ObjectOutput(string[] lists)
+        public static List<BasicIncomeType> ListToObjects(string[] lists)
         {
             List<BasicIncomeType> ObjectsList = new List<BasicIncomeType>();
 
             Dictionary<string, BasicIncomeType> strToIncome = new Dictionary<string, BasicIncomeType> { 
                 {"Доходы", new Income() },
                 {"Доходы компании", new Operation()},
-                {"Доходы физ.лица", new IncomeFromAnIndividual()} 
+                {"Доходы физ.лица", new IncomeFromAnIndividual()}
             };
 
             foreach (string stroka in lists)

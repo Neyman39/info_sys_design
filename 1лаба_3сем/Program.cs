@@ -18,13 +18,13 @@ namespace _1_Laba_3sem
 
             Console.WriteLine("=== Вывод из строк ===");
             string[] provera = new string[] { income1, income2, income3, income4 };
-            foreach (BasicIncomeType linestring in MainString.ObjectOutput(provera))
+            foreach (BasicIncomeType linestring in MainString.ListToObjects(provera))
             {
                 Console.WriteLine(linestring.LineOutput());
             }
 
             Console.WriteLine("=== Вывод из файла ===");
-            foreach (BasicIncomeType linefile in MainString.ObjectOutput(MainString.StrFromFiles("types.txt")))
+            foreach (BasicIncomeType linefile in MainString.ListToObjects(MainString.StrFromFiles("types.txt")))
             {
                 Console.WriteLine(linefile.LineOutput());
             }
