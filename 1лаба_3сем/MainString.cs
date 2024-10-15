@@ -12,7 +12,7 @@ namespace _1_Laba_3sem
         public static string[] StrFromFiles(string filePath)
         {
             string fileContent = File.ReadAllText(filePath);
-            return fileContent.Split(new[] { "\n" }, StringSplitOptions.RemoveEmptyEntries);
+            return fileContent.Split(new[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
         }
 
         public static List<string> ParseString(string input)
@@ -35,14 +35,23 @@ namespace _1_Laba_3sem
 
             foreach (string stroka in lists)
             {
-                var parts = ParseString(stroka);
+                try
+                {
+                    var parts = ParseString(stroka);
 
-                string firstWord = parts[0].Trim('"');
-                strToIncome[firstWord].ReadFromString(parts);
+                    string firstWord = parts[0].Trim('"');
+                    if (!new List<string>{"Доходы", "Доходы компании", "Доходы физ.лица"}.Contains(firstWord))       
+                    {
+                        throw new FormatException($"Неизвестный тип дохода: {firstWord}");
+                    }
+                    strToIncome[firstWord].ReadFromString(parts);
+                    ObjectsList.Add((BasicIncomeType)strToIncome[firstWord].Clone());
+                }
+                catch (FormatException ex)
+                {
+                    Console.WriteLine($"Ошибка: {ex.Message}");
+                }
 
-                // exception
-
-                ObjectsList.Add((BasicIncomeType)strToIncome[firstWord].Clone());
             }
             return ObjectsList;
         }
