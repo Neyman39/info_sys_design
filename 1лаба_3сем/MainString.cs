@@ -42,12 +42,12 @@ namespace _1_Laba_3sem
                     string firstWord = parts[0].Trim('"');
                     if (!new List<string>{"Доходы", "Доходы компании", "Доходы физ.лица"}.Contains(firstWord))       
                     {
-                        throw new FormatException($"Неизвестный тип дохода: {firstWord}");
+                        throw new Exception($"Неизвестный тип дохода: {firstWord}");
                     }
                     strToIncome[firstWord].ReadFromString(parts);
                     ObjectsList.Add((BasicIncomeType)strToIncome[firstWord].Clone());
                 }
-                catch (FormatException ex)
+                catch (Exception ex)
                 {
                     Console.WriteLine($"Ошибка: {ex.Message}");
                 }
