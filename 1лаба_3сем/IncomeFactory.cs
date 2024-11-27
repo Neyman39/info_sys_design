@@ -5,9 +5,9 @@ using System.Collections.Generic;
 using System.IO;
 
 
-namespace _1_Laba_3sem
+namespace IncomeLab
 {
-    class MainString
+    public class IncomeFactory
     {
         public static string[] StrFromFiles(string filePath)
         {
@@ -23,6 +23,8 @@ namespace _1_Laba_3sem
                          .ToList();
         }
 
+        public static List<string> exceptionlist = new List<string>();
+
         public static List<BasicIncomeType> ListToObjects(string[] lists)
         {
             List<BasicIncomeType> ObjectsList = new List<BasicIncomeType>();
@@ -32,6 +34,7 @@ namespace _1_Laba_3sem
                 {"Доходы компании", new Operation()},
                 {"Доходы физ.лица", new IncomeFromAnIndividual()}
             };
+            
 
             foreach (string stroka in lists)
             {
@@ -49,11 +52,24 @@ namespace _1_Laba_3sem
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"Ошибка: {ex.Message}");
+                    exceptionlist.Add($"Ошибка: {ex.Message}");
                 }
-
             }
             return ObjectsList;
         }
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }

@@ -6,11 +6,9 @@ using System.Collections.Generic;
 using System.IO;
 
 
-
-
-namespace _1_Laba_3sem
+namespace IncomeLab
 {
-    abstract class BasicIncomeType : ICloneable
+    public abstract class BasicIncomeType : ICloneable
     {
         public object Clone()
         {
@@ -19,7 +17,7 @@ namespace _1_Laba_3sem
         public abstract void ReadFromString(List<string> parts);
         public abstract string LineOutput();
     }
-    class Income : BasicIncomeType 
+    public class Income : BasicIncomeType 
     { 
         public string Type { get; set; }
         public DateTime Date { get; set; }
@@ -38,7 +36,7 @@ namespace _1_Laba_3sem
             return $"{Type}:\n Дата: {Date.ToString("yyyy.MM.dd")}\n Источник: {Source}\n Сумма: {Amount} р\n";
         }
     }
-    class Operation : BasicIncomeType
+    public class CompanyIncome : BasicIncomeType
     {
         public string Type { get; set; }
         public DateTime Date { get; set; }
@@ -59,7 +57,7 @@ namespace _1_Laba_3sem
             return $"{Type}:\n Дата: {Date.ToString("yyyy.MM.dd")}\n Источник: {Source}\n Сумма: {Amount} р\n Тип операции: {TypeOfOperation}\n";
         }
     }
-    class IncomeFromAnIndividual : BasicIncomeType
+    public class PersonalIncome : BasicIncomeType
     {
         public string Type { get; set; }
         public DateTime Date { get; set; }
