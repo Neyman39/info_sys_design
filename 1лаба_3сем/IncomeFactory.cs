@@ -3,6 +3,7 @@ using System.Text.RegularExpressions;
 using System.Linq;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 
 
 namespace IncomeLab
@@ -23,53 +24,49 @@ namespace IncomeLab
                          .ToList();
         }
 
-        public static List<string> exceptionlist = new List<string>();
+        public static BasicIncomeType fromStr(string str)
+        {
+            Dictionary<string, BasicIncomeType> strToIncome = new Dictionary<string, BasicIncomeType> {
+                { "Доходы", new Income() },
+                { "Доходы компании", new CompanyIncome() },
+                { "Доходы физ.лица", new PersonalIncome() }
+            };
+
+            var parts = ParseString(str);
+            if (parts.Count == 0)
+            {
+                throw new Exception("Пустая строка");
+            }
+            string firstWord = parts[0].Trim('"');
+
+            if (!strToIncome.ContainsKey(firstWord))
+            {
+                throw new Exception($"Неизвестный тип дохода: {firstWord}");
+            }
+            strToIncome[firstWord].ReadFromString(parts);
+
+            return (BasicIncomeType)strToIncome[firstWord].Clone();
+        }
 
         public static List<BasicIncomeType> ListToObjects(string[] lists)
         {
             List<BasicIncomeType> ObjectsList = new List<BasicIncomeType>();
-
-            Dictionary<string, BasicIncomeType> strToIncome = new Dictionary<string, BasicIncomeType> { 
-                {"Доходы", new Income() },
-                {"Доходы компании", new Operation()},
-                {"Доходы физ.лица", new IncomeFromAnIndividual()}
-            };
-            
-
-            foreach (string stroka in lists)
+            foreach (string str in lists)
             {
                 try
                 {
-                    var parts = ParseString(stroka);
-
-                    string firstWord = parts[0].Trim('"');
-                    if (!new List<string>{"Доходы", "Доходы компании", "Доходы физ.лица"}.Contains(firstWord))       
-                    {
-                        throw new Exception($"Неизвестный тип дохода: {firstWord}");
-                    }
-                    strToIncome[firstWord].ReadFromString(parts);
-                    ObjectsList.Add((BasicIncomeType)strToIncome[firstWord].Clone());
+                    ObjectsList.Add(fromStr(str));
                 }
                 catch (Exception ex)
                 {
-                    exceptionlist.Add($"Ошибка: {ex.Message}");
+                    using (StringWriter writer = new StringWriter())
+                    {
+                        writer.WriteLine($"Ошибка при обработке строки: {ex.Message}");
+                        Console.WriteLine(writer.ToString());
+                    }
                 }
             }
             return ObjectsList;
         }
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 }

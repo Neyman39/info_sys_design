@@ -1,6 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using IncomeLab;
+using System.Globalization;
 
 namespace IncomeTests
 {
@@ -11,62 +12,120 @@ namespace IncomeTests
         public void TestStringEnteredCorrectly()
         {
             string expected = "Доходы компании:\n Дата: 2023.05.01\n Источник: Сдача гаража в аренду\n Сумма: 35000 р\n Тип операции: Перевод на сбер\n";
-            string[] lists = { "\"Доходы компании\" 2023.05.01 \"Сдача гаража в аренду\" 35000 \"Перевод на сбер\"" };
+            string str = "\"Доходы компании\" 2023.05.01 \"Сдача гаража в аренду\" 35000 \"Перевод на сбер\"";
 
-            string actual = IncomeFactory.ListToObjects(lists)[0].LineOutput();
+            string actual = IncomeFactory.fromStr(str).LineOutput();
 
             Assert.AreEqual(expected, actual);
         }
 
         [TestMethod]
-        public void TestCompanyIncomeFromSrtr()
+        public void Test_IncomeCreatedCorrectly()
+        {
+            string str = "\"Доходы\" 2023.05.01 \"Сдача гаража в аренду\" 35000";
+
+            var expectedobj = new Income()
+            {
+                Type = "Доходы",
+                Date = DateTime.ParseExact("2023.05.01", "yyyy.MM.dd", CultureInfo.InvariantCulture),
+                Source = "Сдача гаража в аренду",
+                Amount = 35000
+            };
+
+            var actualobj = IncomeFactory.fromStr(str);
+
+            Assert.ReferenceEquals(expectedobj, actualobj);
+        }
+
+        [TestMethod]
+        public void Test_CompanyIncomeCreatedCorrectly()
+        {
+            string str = "\"Доходы компании\" 2023.05.01 \"Сдача гаража в аренду\" 35000 \"Перевод на сбер\"";
+
+            var expectedobj = new CompanyIncome()
+            {
+                Type = "Доходы компании",
+                Date = DateTime.ParseExact("2023.05.01", "yyyy.MM.dd", null),
+                Source = "Сдача гаража в аренду",
+                Amount = 35000,
+                TypeOfOperation = "Перевод на сбер"
+            };
+
+            var actualobj = IncomeFactory.fromStr(str);
+
+            Assert.ReferenceEquals(expectedobj, actualobj);
+        }
+
+        [TestMethod]
+        public void Test_PersonalIncomeCreatedCorrectly()
+        {
+            string str = "\"Доходы физ.лица\" 2023.05.01 \"Сдача гаража в аренду\" 35000 \"Иванов И.И.\"";
+
+            var expectedobj = new PersonalIncome()
+            {
+                Type = "Доходы физ.лица",
+                Date = DateTime.ParseExact("2023.05.01", "yyyy.MM.dd", null),
+                Source = "Сдача гаража в аренду",
+                Amount = 35000,
+                SenderName = "Иванов И.И."
+            };
+
+            var actualobj = IncomeFactory.fromStr(str);
+
+            Assert.ReferenceEquals(expectedobj, actualobj);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(FormatException), "Строка не распознана как действительное значение DateTime.")]
+        public void TestNotCorrectDateFormatV1()
         {
             string str = "\"Доходы компании\" 223 \"Сдача гаража в аренду\" 35000";
-            IncomeFactory.ListToObjects(str);
-
-            var actual = IncomeFactory.exceptionlist[0];
-
-            Assert.AreEqual(expected, actual);
-            IncomeFactory.exceptionlist.Clear();
+            IncomeFactory.fromStr(str);
         }
 
         [TestMethod]
-        public void TestNotCorrectDateFormat()
+        public void TestNotCorrectDateFormatV2()
         {
-            string expected = "Ошибка: Строка не распознана как действительное значение DateTime.";
-            string[] lists = { "\"Доходы компании\" 223 \"Сдача гаража в аренду\" 35000" };
-            IncomeFactory.ListToObjects(lists);
+            string expected = "Строка не распознана как действительное значение DateTime.";
+            string str = "\"Доходы компании\" 223 \"Сдача гаража в аренду\" 35000";
+            Exception exception = null;
 
-            var actual = IncomeFactory.exceptionlist[0];
+            try { IncomeFactory.fromStr(str); }
+            catch (Exception ex) { exception = ex; }
 
-            Assert.AreEqual(expected, actual);
-            IncomeFactory.exceptionlist.Clear();
+            Assert.AreEqual(expected, exception.Message);
         }
 
         [TestMethod]
-        public void TestUnknownTypeOfIncome()
+        public void TestEmptyString()
         {
-            string expected = "Ошибка: Неизвестный тип дохода: Доходы ИП";
-            string[] lists = { "\"Доходы ИП\" 2024.10.10 \"Продажа мышек WLMouse\" 235000" };
-            IncomeFactory.ListToObjects(lists);
+            string str = "    ";
 
-            var actual = IncomeFactory.exceptionlist[0];
+            var exception = Assert.ThrowsException<Exception>(() => IncomeFactory.fromStr(str));
 
-            Assert.AreEqual(expected, actual);
-            IncomeFactory.exceptionlist.Clear();
+            Assert.AreEqual("Пустая строка", exception.Message);
         }
 
         [TestMethod]
-        public void TestInvalidStringFormat()
+        public void Test_UnknownTypeOfIncome()
         {
-            string expected = "Ошибка: Входная строка имела неверный формат.";
-            string[] lists = { "\"Доходы компании\" 2024.10.10 Продажа мышек WLMouse 235000 \"Перевод на сбер\"" };
-            IncomeFactory.ListToObjects(lists);
+            string expected = "Неизвестный тип дохода: Доходы ИП";
+            string str = "\"Доходы ИП\" 2024.10.10 \"Продажа мышек WLMouse\" 235000";
 
-            var actual = IncomeFactory.exceptionlist[0];
+            var exception = Assert.ThrowsException<Exception>(() => IncomeFactory.fromStr(str));
 
-            Assert.AreEqual(expected, actual);
-            IncomeFactory.exceptionlist.Clear();
+            Assert.AreEqual(expected, exception.Message);
+        }
+
+        [TestMethod]
+        public void Test_InvalidStringFormat()
+        {
+            string expected = "Входная строка имела неверный формат.";
+            string str = "\"Доходы компании\" 2024.10.10 Продажа мышек WLMouse 235000 \"Перевод на сбер\"";
+
+            var exception = Assert.ThrowsException<FormatException>(() => IncomeFactory.fromStr(str));
+
+            Assert.AreEqual(expected, exception.Message);
         }
     }
 }

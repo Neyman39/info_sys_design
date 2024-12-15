@@ -12,7 +12,7 @@ namespace IncomeLab
         static void Main(string[] args)
         {
             //Console.OutputEncoding = Encoding.UTF8;
-            //что-то тут не то
+
             Console.WriteLine("=== Вывод из файла ===");
             foreach (BasicIncomeType linefile in IncomeFactory.ListToObjects(IncomeFactory.StrFromFiles("3laba.txt")))
             {
